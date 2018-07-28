@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
-const Inventory_item = require('./inventory');
 const Schema = mongoose.Schema;
 
 const userOrder = new Schema({
-  email: {
+  user_email: {
+    type: String,
+    required: true
+  },
+  address: {
     type: String,
     required: true
   },
@@ -13,40 +16,65 @@ const userOrder = new Schema({
   },
   created_order_time: {
     type: Date,
-    required: true,
     default: Date.now
   },
   total_price: {
     type: Number,
-    required: true
+    default: 0
   },
   in_process: {
     type: Boolean,
-    required: true,
     default: false
   },
   end_time: {
     type: Date,
-  },
-  user_name: {
-    type: String
+    default: null
   },
   order_number: {
     type: Number,
-    required: true
+    required: true,
+    default: 1
   },
-  cpu: { brand_name: String, version: String, price: Number, pic: String },
-  motherboard: { brand_name: String, version: String, price: Number, pic: String },
-  memory: { brand_name: String, version: String, price: Number, pic: String },
-  power_core: { brand_name: String, version: String, price: Number, pic: String },
-  video_card: { brand_name: String, version: String, price: Number, pic: String },
-  case: { brand_name: String, version: String, price: Number, pic: String },
-  fan: { brand_name: String, version: String, price: Number, pic: String },
-  wifi_adapter: { brand_name: String, version: String, price: Number, pic: String },
-  cpu_cooler: { brand_name: String, version: String, price: Number, pic: String },
-  hard_drive: { brand_name: String, version: String, price: Number, pic: String },
-
-  list: Inventory_item
+  cpu: {
+    type: String,
+    default: null
+  },
+  mother_board: {
+    type: String,
+    default: null
+  },
+  memory: {
+    type: String,
+    default: null
+  },
+  power: {
+    type: String,
+    default: null
+  },
+  video_card: {
+    type: String,
+    default: null
+  },
+  case: {
+    type: String,
+    default: null
+  },
+  fan: {
+    type: String,
+    default: null
+  },
+  wifi_adapter: {
+    type: String,
+    default: null
+  },
+  cpu_cooler: {
+    type: String,
+    default: null
+  },
+  hard_drive: {
+    type: String,
+    default: null
+  }
 });
 
 const Order = mongoose.model('Order', userOrder);

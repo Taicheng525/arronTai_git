@@ -6,10 +6,22 @@ const partsInventory = new Schema({
     type: String,
     required: true
   },
-  version: String,
-  price: Number,
-  pic: String,
-  description: String
+  version: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    default: 0
+  },
+  pic: {
+    type: String,
+    default: null
+  },
+  description: {
+    type: String,
+    default: null
+  }
 });
 
 const Inventory_item = mongoose.model('inventory_item', partsInventory);

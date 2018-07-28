@@ -1,7 +1,10 @@
-const Koa = require('koa');
-const mongoose = require('mongoose');
-const User_modle = require('./models/user');
-const { ApolloServer, gql } = require('apollo-server-koa');
+import Koa from 'koa';
+import mongoose from 'mongoose';
+import { merge } from 'lodash';
+import { ApolloServer, gql } from 'apollo-server-koa';
+import { typeDef as User, resolvers as User_resolvers } from './schema/user_schema';
+import { typeDef as Inventory_item, resolvers as Inventory_item_resolvers } from './schema/inventory_schema';
+import { typeDef as Order, resolvers as Order_resolvers } from './schema/order_schema';
 
 mongoose.connect('mongodb://127.0.0.1:27017/', { useNewUrlParser: true, dbName: 'arronTai' });
 const db = mongoose.connection;
@@ -10,26 +13,23 @@ db.once('open', () => {
   console.info('mongodb is connected!!');
 });
 
-//-------------------------------------------------graphql apollo schema
-
-const typeDefs = gql`
-  type User {
-    _id:String,
-    user_name:String!,
-    user_email:String!,
-    created_user_time:String!,
-    user_admin:Boolean!,
-    password:String!,
-    user_avatar:String,
-    online:Boolean,
-    description:String
-  } 
-
-  type Query {
+const Query = gql`
+  type Query{
+  #user query
     find_user(email:String!):User,
-  }
+    all_users:[User],
 
-  type Mutation {
+  #inventory_item query 
+    all_items:[Inventory_item]
+
+  #order query
+    all_orders:[Order]
+  }
+`;
+
+const Mutation = gql`
+#user mutation
+  type Mutation{
     add_user(
       user_name:String!,
       user_email:String!,
@@ -37,42 +37,30 @@ const typeDefs = gql`
       user_avatar:String,
       online:Boolean,
       description:String
-    ): User
+    ): User,
+
+#inventory_item mutation
+    add_item( 
+      brand_name:String!,
+      version:String!,
+      price:Int,
+      pic:String,
+      description:String
+    ):Inventory_item,
+
+#order mutation
+    add_order(
+      order_name:String!,
+      user_email:String!,
+      address:String!,
+    ): Order,
   }
-`;
+`
 
-//------------------------------------------------- resolvers
-
-const resolvers = {
-  Query: {
-    find_user: async (parent, args) => {
-      const data = await User_modle.findOne({ user_email: args.email }, (err, doc) => {
-        if (err) return console.error(err);
-        return doc
-      });
-
-      return data;
-    }
-  },
-
-  Mutation: {
-    add_user: (parent, args) => {
-      //console.log(typeof (args), args);
-      const user = new User_modle({
-        user_name: args.user_name,
-        user_email: args.user_email,
-        password: args.password,
-        user_avatar: args.user_avatar,
-        description: args.description
-      });
-      return user.save();
-    },
-  },
-};
-
-//-------------------------------------------------graphql apollo schema
-
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs: [Query, Mutation, User, Inventory_item, Order],
+  resolvers: merge(User_resolvers, Inventory_item_resolvers, Order_resolvers)
+});
 
 const app = new Koa();
 const port = process.env.PORT || 4000;
