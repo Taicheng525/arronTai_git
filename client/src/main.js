@@ -5,9 +5,13 @@ import store from './store'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCoffee } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
 import 'materialize-css/dist/css/materialize.css'
 import 'materialize-css/dist/js/materialize.js'
 
+//setup jquery (have to use require)
+const $ = require('jquery')
+window.$ = $
 
 // fontawesome setup
 library.add(faCoffee)
