@@ -1,5 +1,5 @@
 <template>
-  <section class="parallax-container">
+  <section class="parallax-container" id="section">
     <div class="row" id="three_ad">
 
       <div class="col s12 m2 offset-m2">
@@ -55,9 +55,10 @@
       </div>
     </div>
 
-<!-- cpu img section -->
+<!-- second row ============================================= -->
+
     <div class="row" >
-      
+<!-- cpu img section -->      
       <div class="col s12 m6" id="left_section">
         <div class="slider">
           <ul class="slides">
@@ -79,6 +80,7 @@
         </div>
       </div>
 
+<!-- start created section -->
       <div class="col s12 m6 white-text" id="right_section" >
         <!-- <img class="responsive-img" src="../../assets/right.jpg" alt=""> -->
         <h3>It's about time...</h3>
@@ -117,9 +119,11 @@ export default {
 </script>
 
 <style scoped>
-section {
+#section {
   min-height: 100vh;
-  background: url(../../assets/back_img.png);
+  background: url(../../assets/bk.png);
+  background-size:cover;
+  background-repeat: no-repeat
 }
 
 .slow-spin {
@@ -157,4 +161,5 @@ section {
 #create_btn{
   margin: 5.5em 0px 0px 0px;
 }
+
 </style>

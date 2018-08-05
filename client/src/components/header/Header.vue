@@ -1,6 +1,6 @@
 <template>
   <header class="nav_page">
-    <nav class="nav-wrapper z-depth-0 transparent">
+    <nav class="nav-wrapper z-depth-3 transparent">
       <div class="containerr">
         <a href="" class="brand-logo vert_mid">
           <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
