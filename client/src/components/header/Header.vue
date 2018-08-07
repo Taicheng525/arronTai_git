@@ -30,7 +30,9 @@
         </a>
         <ul class="right hide-on-med-and-down">
           <li><a href="#">Register</a></li>
-          <li><a href="#">Login</a></li>
+          <li>
+            <router-link :to="{ name: 'Login'}">Login</router-link>
+          </li>
           <li><a href="#">Contact</a></li>
         </ul>
         <ul class="sidenav grey lighten-2" id="mobile-menu">

@@ -3,6 +3,7 @@
     <Header id="header"/>
     <Section id="section"/>
     <VideoDisplay />
+    <Footer />
   </div>
 </template>
 
@@ -10,10 +11,11 @@
 import Header from "@/components/header/Header";
 import Section from "@/components/section/Section";
 import VideoDisplay from "@/components/videoDisplay/VideoDisplay";
+import Footer from "@/components/footer/Footer";
 
 export default {
   name: "Home",
-  components: { Header, Section, VideoDisplay },
+  components: { Header, Section, VideoDisplay, Footer },
   data() {
     return {};
   }
