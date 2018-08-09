@@ -1,43 +1,53 @@
-// import passport from 'koa-passport';
-// import User_modle from './models/user';
-// // import LocalStrategy from 'passport-local'
 
-// passport.serializeUser(function (user, done) {
-//   done(null, user.id)
-// })
+import { Strategy as LocalStrategy } from 'passport-local';
+import User_modal from './models/user';
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 
-// passport.deserializeUser(function (id, done) {
-//   done(null, user)
-// })
+// const pass = (passport) => {
+//   passport.use(new LocalStrategy(
+//     function (username, password, done) {
+//       let query = { user_email: username };
+//       User_modal.findOne(query, function (err, user) {
+//         if (err) { return done(err); }
+//         if (!user) { return done(null, false, { message: 'No user found' }); }
+//         if (user.password != password) { return done(null, false); }
+//         return done(null, user);
+//       });
+//     }));
 
-// var LocalStrategy = require('passport-local').Strategy
-// passport.use(new LocalStrategy({
-//   usernameField: 'user_email',
-//   passwordField: 'password',
-// }, function (username, password, done) {
-//   // retrieve user ...
-//   if (username === 'test' && password === 'test') {
-//     done(null, user)
-//   } else {
-//     done(null, false)
-//   }
-// }))
+//   passport.serializeUser(function (user, done) {
+//     done(null, user.id);
+//   });
 
-// passport.use(new LocalStrategy({
-//    usernameField: 'user_email',
-//    passwordField: 'password',
-//  },
-//   function (username, password, done) {
-//     User_modle.findOne({ username: username, password: password }, done);
-//   }
-// ));
+//   passport.deserializeUser(function (id, done) {
+//     User_modal.findById(id, function (err, user) {
+//       if (err) { return done(err); }
+//       done(null, user);
+//     });
+//   });
+// }
 
+const pass_jwt = (passport) => {
+  let opts = {}
+  opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+  opts.secretOrKey = 'secret';
+  // opts.issuer = 'accounts.examplesoft.com';
+  // opts.audience = 'yoursite.net';
+  passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
+    console.log('auth jwt-payload: ',jwt_payload);
+    User_modal.findOne({ user_email: jwt_payload.user.user_email }, function (err, user) {
 
-// passport.serializeUser(function (user, done) {
-//   done(null, user._id)
-// })
-
-// passport.deserializeUser(function (id, done) {
-//   User_modle.findById(id, done);
-// })
-
+      if (err) {
+        return done(err, false);
+      }
+      if (user) {
+        console.log('work')
+        return done(null, user);
+      } else {
+        return done(null, false);
+        // or you could create a new account
+      }
+    });
+  }));
+}
+export default pass_jwt;

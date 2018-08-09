@@ -29,7 +29,9 @@
           <i class="material-icons">menu</i>
         </a>
         <ul class="right hide-on-med-and-down">
-          <li><a href="#">Register</a></li>
+          <li>
+            <router-link :to="{ name: 'Regist'}">Register</router-link>
+          </li>
           <li>
             <router-link :to="{ name: 'Login'}">Login</router-link>
           </li>

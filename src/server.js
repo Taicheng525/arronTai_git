@@ -4,20 +4,16 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import cors from 'cors'
 import path from 'path';
-// import Koa from 'koa';
-// import route from 'koa-route';
-// import session from 'koa-session2';
-// import bodyParser from 'koa-bodyparser';
 import passport from 'passport';
-// import './auth.js';
-// import cors from 'koa2-cors';
+import pass_jwt from './auth';
+import jwt from 'jsonwebtoken';
 
 import mongoose from 'mongoose';
 import { merge } from 'lodash';
-// import { ApolloServer, gql } from 'apollo-server-koa';
 import { typeDef as User, resolvers as User_resolvers } from './schema/user_schema';
 import { typeDef as Inventory_item, resolvers as Inventory_item_resolvers } from './schema/inventory_schema';
 import { typeDef as Order, resolvers as Order_resolvers } from './schema/order_schema';
+import User_modal from './models/user';
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/', { useNewUrlParser: true, dbName: 'arronTai' });
 const db = mongoose.connection;
@@ -26,32 +22,22 @@ db.once('open', () => {
   console.info('mongodb is connected!!');
 });
 
-const LocalStrategy = require('passport-local').Strategy;;
-const User_modal = require('./models/user');
+// app
+const app = new express();
+const ql_path = '/graphql'
+const port = process.env.PORT || 4000;
 
-passport.use(new LocalStrategy(
-  function (username, password, done) {
-    let query = { user_email: username };
-    User_modal.findOne(query, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false, { message: 'No user found' }); }
-      if (user.password != password) { return done(null, false); }
-      //console.log(user)
-      return done(null, user);
-    });
-  }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cors());
 
-passport.serializeUser(function (user, done) {
-  done(null, user.id);
-});
+pass_jwt(passport);
 
-passport.deserializeUser(function (id, done) {
-  User_modal.findById(id, function (err, user) {
-    // if (err) { return done(err); }
-    done(null, user);
-  });
-});
+// authentication
+app.use(passport.initialize());
+app.use(passport.session());
 
+// Apollo graphql =======================================================
 const Query = gql`
   type Query{
   #user query
@@ -98,62 +84,45 @@ const Mutation = gql`
 
 const server = new ApolloServer({
   typeDefs: [Query, Mutation, User, Inventory_item, Order],
-  resolvers: merge(User_resolvers, Inventory_item_resolvers, Order_resolvers)
+  resolvers: merge(User_resolvers, Inventory_item_resolvers, Order_resolvers),
 });
 
-// app
-const app = new express();
-const port = process.env.PORT || 4000;
-server.applyMiddleware({ app });
-
-// cors
-app.use(cors());
-
-// body parser
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-// sessions
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
-}))
-
-// authentication
-app.use(passport.initialize());
-app.use(passport.session());
-
 // route====================================
-// User_modal.findOne({user_email:"321@qq.com"}, function (err, user) {
-//   console.log(user);
-// })
 
+app.post('/login', (req, res, next) => {
+  const user_email = req.body.user_email;
+  const password = req.body.password;
 
-// app.post('/login_auth',
-//   passport.authenticate('local', {
-//   }))
-
-app.post('/login', function (req, res, next) {
-  passport.authenticate('local', function (err, user, info) {
-    if (user) {
-      console.log(user)
-      return res.send(user)
+  User_modal.findOne({ user_email }, (err, user) => {
+    if (err) throw err;
+    if (!user) {
+      return res.json({ sucess: false, msg: 'User not found' });
     }
-  })(req, res, next)
-}
-);
 
-// app.use(function (ctx, next) {
-//   if (ctx.isAuthenticated()) {
-//     console.log('good')
-//     return next()
-//   } else {
-//     console.log('not good')
-//   }
+    if (password == user.password) {
+      jwt.sign({ user }, 'secret', (err, token) => {
+        if (err) throw err;
+        res.json({
+          token,
+          user
+        });
+      });
+    }
+  });
+});
+
+app.get('/test', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  res.json({
+    user: req.user,
+    message: "pass man~"
+  })
+})
+
+// app.get('/test', passport.authenticate('local'), (req, res) => {
+//   res.send('test good')
 // })
-
+app.use(ql_path, passport.authenticate('jwt', { session: false }));
+server.applyMiddleware({ app });
 app.listen({ port }, () =>
   console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`),
 );

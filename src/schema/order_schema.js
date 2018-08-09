@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-koa';
+import { gql } from 'apollo-server-express';
 import Order_modle from '../models/order';
 
 export const typeDef = gql`

@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-koa';
+import { gql } from 'apollo-server-express';
 import User_modle from '../models/user';
 import { typeDef as Order, resolvers as Order_resolvers } from './order_schema';
 import Order_model from '../models/order';

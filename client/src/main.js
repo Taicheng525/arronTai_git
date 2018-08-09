@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import 'materialize-css/dist/css/materialize.css'
 import 'materialize-css/dist/js/materialize.js'
 import VueYoutube from 'vue-youtube'
-
+import 'vue2-dropzone/dist/vue2Dropzone.css'
 Vue.use(VueYoutube)
 Vue.use(VueAxios, axios)
 

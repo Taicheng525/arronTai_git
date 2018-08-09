@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row">
-      <form class="col s12" @submit="login">
+      <form class="col s12" @submit.prevent="login">
 
         <div class="row">
           <div class="input-field col s12">
@@ -20,7 +20,12 @@
           <i class="material-icons right">send</i>
         </button>
         
+        <router-link :to="{name:'Home'}" class="btn waves-effect waves-light blue right"  >Back
+          <i class="material-icons right">send</i>
+        </router-link>
+
       </form>
+
     </div>
   </div>
 </template>
@@ -36,12 +41,14 @@ export default {
   },
   methods: {
     login() {
+      // console.log(this.user_email, this.password);
       this.axios
-        .post("http://localhost:4000/login_auth", {
-          user_email: this.user_email,
+        .post("http://localhost:4000/login", {
+          username: this.user_email,
           password: this.password
         })
-        .then(res => console.log(res));
+        .then(res => console.log(res.data))
+        .catch(err => console.log(`vue side error: ${err}`));
     }
   }
 };

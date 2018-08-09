@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-koa';
+import { gql } from 'apollo-server-express';
 import Inventory_modle from '../models/inventory';
 
 export const typeDef = gql`
