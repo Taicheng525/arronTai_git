@@ -24,7 +24,6 @@ db.once('open', () => {
 
 // app
 const app = new express();
-const ql_path = '/graphql'
 const port = process.env.PORT || 4000;
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -82,21 +81,51 @@ const Mutation = gql`
   }
 `
 
+const check = (token) => {
+  jwt.verify(token, 'secret', function (err, decoded) {
+    if (decoded) {
+      console.log(decoded.user_email)
+      User_modal.findOne({ user_email: decoded.user_email }, (err, user) => {
+        console.log('yser  ', user)
+        return user
+
+      })
+    }
+  });
+}
+
 const server = new ApolloServer({
   typeDefs: [Query, Mutation, User, Inventory_item, Order],
   resolvers: merge(User_resolvers, Inventory_item_resolvers, Order_resolvers),
+  context: async ({ req, res }) => {
+    let bearer = req.headers.authorization;
+    let token = bearer.split(' ')[1];
+
+    const a = await jwt.verify(token, 'secret', function (err, decoded) {
+      if (err) throw err
+      return decoded
+    });
+    const user = await User_modal.findOne({ user_email: a.user.user_email }, (err, user) => {
+      if (err) throw err
+
+      return user;
+    })
+    return { user }
+  },
 });
+
 
 // route====================================
 
 app.post('/login', (req, res, next) => {
   const user_email = req.body.user_email;
   const password = req.body.password;
+  // console.log(user_email,password)
 
   User_modal.findOne({ user_email }, (err, user) => {
     if (err) throw err;
     if (!user) {
-      return res.json({ sucess: false, msg: 'User not found' });
+      return res.json({ success: false, msg: 'User not found' });
     }
 
     if (password == user.password) {
@@ -112,16 +141,16 @@ app.post('/login', (req, res, next) => {
 });
 
 app.get('/test', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  //console.log(req)
   res.json({
     user: req.user,
-    message: "pass man~"
+    message: "pass man~",
+    info: req.authInfo.msg
   })
 })
 
-// app.get('/test', passport.authenticate('local'), (req, res) => {
-//   res.send('test good')
-// })
-app.use(ql_path, passport.authenticate('jwt', { session: false }));
+
+
 server.applyMiddleware({ app });
 app.listen({ port }, () =>
   console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`),

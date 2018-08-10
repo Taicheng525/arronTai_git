@@ -44,7 +44,7 @@ export default {
       // console.log(this.user_email, this.password);
       this.axios
         .post("http://localhost:4000/login", {
-          username: this.user_email,
+          user_email: this.user_email,
           password: this.password
         })
         .then(res => console.log(res.data))

@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-express';
+import { gql, AuthenticationError } from 'apollo-server-express';
 import User_modle from '../models/user';
 import { typeDef as Order, resolvers as Order_resolvers } from './order_schema';
 import Order_model from '../models/order';
@@ -29,12 +29,17 @@ export const resolvers = {
       return data;
     },
 
-    all_users: async () => {
+    all_users: async (parent, args, context) => {
+      console.log('context: ', context)
+      if (!context.user) {
+        throw new AuthenticationError("Can't find your user or user is null!");
+      }
       const data = await User_modle.find({}, (err, doc) => {
         if (err) return err;
         return doc;
       });
       return data;
+
     }
   },
 

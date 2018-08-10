@@ -34,17 +34,19 @@ const pass_jwt = (passport) => {
   // opts.issuer = 'accounts.examplesoft.com';
   // opts.audience = 'yoursite.net';
   passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
-    console.log('auth jwt-payload: ',jwt_payload);
+    console.log('auth jwt-payload: ', jwt_payload);
     User_modal.findOne({ user_email: jwt_payload.user.user_email }, function (err, user) {
 
       if (err) {
-        return done(err, false);
+        console.log('above work')
+        return done(err, false, { msg: 'e' });
       }
       if (user) {
         console.log('work')
-        return done(null, user);
+        return done(null, user, { msg: "d" });
       } else {
-        return done(null, false);
+        console.log('below work')
+        return done(null, false, { msg: 'e2' });
         // or you could create a new account
       }
     });
