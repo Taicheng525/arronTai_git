@@ -38,19 +38,11 @@
             <label for="description">Description</label>
           </div>
         </div>
-         
-        <!-- <div class="file-field input-field">
-          <div class="btn">
-            <span>File</span>
-            <input type="file">
-          </div>
-          <div class="file-path-wrapper">
-            <input v-model="user_avatar" class="file-path validate" type="text">
-          </div>
+    
+        <!-- <div class="row">
+          <vue-dropzone class="col s3" id="drop1" :options="dropOptions" style="height:150px"></vue-dropzone>
         </div> -->
-<div class="row">
-        <vue-dropzone class="col s3" id="drop1" :options="dropOptions" style="height:150px"></vue-dropzone>
-</div>
+
         <button class="btn waves-effect waves-light large" type="submit" >Submit
           <i class="material-icons right">send</i>
         </button>
