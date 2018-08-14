@@ -98,20 +98,28 @@ const server = new ApolloServer({
   typeDefs: [Query, Mutation, User, Inventory_item, Order],
   resolvers: merge(User_resolvers, Inventory_item_resolvers, Order_resolvers),
   context: async ({ req, res }) => {
-    let bearer = req.headers.authorization;
-    let token = bearer.split(' ')[1];
 
-    const a = await jwt.verify(token, 'secret', function (err, decoded) {
-      if (err) throw err
-      return decoded
-    });
-    const user = await User_modal.findOne({ user_email: a.user.user_email }, (err, user) => {
-      if (err) throw err
+    if (!req.headers.authorization) {
+      return { token: null }
+    } else {
+      let bearer = req.headers.authorization;
+      let token = bearer.split(' ')[1];
 
-      return user;
-    })
-    return { user }
-  },
+      const a = await jwt.verify(token, 'secret', function (err, decoded) {
+        if (err) throw err
+        return decoded
+      });
+      const user = await User_modal.findOne({ user_email: a.user.user_email }, (err, user) => {
+        if (err) throw err
+
+        return user;
+      })
+      return {
+        user: user,
+        token: token
+      }
+    }
+  }
 });
 
 
@@ -140,14 +148,14 @@ app.post('/login', (req, res, next) => {
   });
 });
 
-app.get('/test', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-  //console.log(req)
-  res.json({
-    user: req.user,
-    message: "pass man~",
-    info: req.authInfo.msg
-  })
-})
+// app.get('/test', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+//   //console.log(req)
+//   res.json({
+//     user: req.user,
+//     message: "pass man~",
+//     info: req.authInfo.msg
+//   })
+// })
 
 
 

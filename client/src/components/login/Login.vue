@@ -47,7 +47,11 @@ export default {
           user_email: this.user_email,
           password: this.password
         })
-        .then(res => console.log(res.data))
+        .then(res => {
+          console.log(res.data);
+          localStorage.setItem("tai_token", res.data.token);
+          localStorage.setItem("arron_user", JSON.stringify(res.data.user));
+        })
         .catch(err => console.log(`vue side error: ${err}`));
     }
   }

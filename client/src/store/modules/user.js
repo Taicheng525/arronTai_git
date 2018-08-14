@@ -1,7 +1,9 @@
 import user_api from '../../api/user_api'
+import gql from 'graphql-tag'
 
 const state = {
-  user: Object
+  user: '11',
+  is_login: false
 }
 
 const getters = {
@@ -11,7 +13,12 @@ const getters = {
 }
 
 const actions = {
+  async regist_user({ commit }, user_payload) {
 
+    let a = await user_api.regist_api(user_payload)
+    
+    console.log('a ', a);
+  },
 }
 
 const mutations = {

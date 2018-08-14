@@ -31,8 +31,11 @@ export const resolvers = {
 
     all_users: async (parent, args, context) => {
       console.log('context: ', context)
+      if (!context.token) {
+        throw new AuthenticationError("Unauth since no token");
+      }
       if (!context.user) {
-        throw new AuthenticationError("Can't find your user or user is null!");
+        throw new AuthenticationError("can't find user");
       }
       const data = await User_modle.find({}, (err, doc) => {
         if (err) return err;
@@ -50,7 +53,6 @@ export const resolvers = {
         user_name: args.user_name,
         user_email: args.user_email,
         password: args.password,
-        user_avatar: args.user_avatar,
         description: args.description
       });
       return user.save();
